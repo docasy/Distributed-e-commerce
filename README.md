@@ -1,4 +1,4 @@
-# 分布式电商平台 🛒
+# 分布式电商平台 
 
 <p align="center">
   <img src="https://img.shields.io/badge/Spring%20Boot-2.7.18-brightgreen.svg" alt="Spring Boot"/>
@@ -12,16 +12,16 @@
 
 这是一个基于**微服务架构**的分布式电商平台后端项目。项目涵盖了分布式系统中的核心技术点，包括：
 
-- ✅ **微服务架构**：用户、商品、订单服务独立部署
-- ✅ **分布式锁**：Redis实现防止商品超卖
-- ✅ **接口幂等性**：Token机制防止订单重复提交
-- ✅ **消息队列**：RabbitMQ实现订单超时自动取消
-- ✅ **服务调用**：OpenFeign实现服务间通信
-- ✅ **网关鉴权**：Spring Cloud Gateway统一JWT认证
-- ✅ **限流降级**：Gateway集成Redis限流
-- ✅ **缓存策略**：Redis缓存热点数据
+-  **微服务架构**：用户、商品、订单服务独立部署
+-  **分布式锁**：Redis实现防止商品超卖
+-  **接口幂等性**：Token机制防止订单重复提交
+-  **消息队列**：RabbitMQ实现订单超时自动取消
+-  **服务调用**：OpenFeign实现服务间通信
+-  **网关鉴权**：Spring Cloud Gateway统一JWT认证
+-  **限流降级**：Gateway集成Redis限流
+-  **缓存策略**：Redis缓存热点数据
 
-## 🏗️ 技术架构
+##  技术架构
 
 ### 技术栈
 
@@ -110,7 +110,7 @@ distributed-ecommerce/
 └── pom.xml                    # Maven父项目
 ```
 
-## 🚀 快速开始
+##  快速开始
 
 ### 环境要求
 
@@ -159,7 +159,7 @@ cd ecommerce-gateway
 mvn spring-boot:run
 ```
 
-### 5. 启动前端（可选）🆕
+### 5. 启动前端（可选）
 
 ```bash
 cd ecommerce-frontend
@@ -178,11 +178,11 @@ npm install
 - 密码：`123456`
 
 **功能页面**：
-- 🔐 登录/注册
-- 🛍️ 商品列表（搜索、分页）
-- 📦 商品详情
-- 🛒 创建订单
-- 📋 我的订单（查看、支付、取消）
+-  登录/注册
+-  商品列表（搜索、分页）
+-  商品详情
+-  创建订单
+-  我的订单（查看、支付、取消）
 
 ### 方式2：Postman测试API
 
@@ -191,13 +191,13 @@ npm install
 **基础URL**
 
 访问 http://localhost:8848/nacos，确认以下服务已注册：
-- ✅ ecommerce-user (8081)
-- ✅ ecommerce-product (8082)
-- ✅ ecommerce-order (8083)
-- ✅ ecommerce-gateway (8080)
-- ✅ ecommerce-frontend (3000) 🆕
+-  ecommerce-user (8081)
+-  ecommerce-product (8082)
+-  ecommerce-order (8083)
+-  ecommerce-gateway (8080)
+-  ecommerce-frontend (3000) 🆕
 
-## 📝 API接口文档
+##  API接口文档
 
 详见 [QUICKSTART.md](QUICKSTART.md) 中的完整测试流程。
 
@@ -205,7 +205,7 @@ npm install
 
 所有API请求通过网关访问：`http://localhost:8080/api`
 
-## 🎯 核心功能实现
+##  核心功能实现
 
 ### 1. 分布式锁防止超卖
 
@@ -251,31 +251,14 @@ if (order.getStatus() == 0) {
 boolean valid = JwtUtil.validateToken(token);
 ```
 
-## 💡 面试要点
-
-详见 [INTERVIEW.md](INTERVIEW.md) 中的完整面试准备指南。
-
-### 高频问题
-
-1. **如何防止商品超卖？**
-   - 数据库乐观锁 + Redis分布式锁
-
-2. **如何保证接口幂等性？**
-   - Token机制 + Redis
-
-3. **分布式事务如何处理？**
-   - Seata AT模式 + 消息队列补偿
-
-4. **如何防止缓存穿透/击穿/雪崩？**
-   - 布隆过滤器 + 互斥锁 + 随机过期时间
 
 ## 📈 性能优化
 
-- ✅ Redis缓存热点商品（30分钟）
-- ✅ MyBatis Plus批量查询
-- ✅ 数据库连接池（Druid）
-- ✅ 异步消息处理（RabbitMQ）
-- ✅ 网关层限流降级
+-  Redis缓存热点商品（30分钟）
+-  MyBatis Plus批量查询
+-  数据库连接池（Druid）
+-  异步消息处理（RabbitMQ）
+-  网关层限流降级
 
 ## 🔧 待扩展功能
 
@@ -286,35 +269,18 @@ boolean valid = JwtUtil.validateToken(token);
 - [ ] 优惠券系统
 - [ ] 推荐系统
 
-## 📚 学习路线（10天计划）
-
-| 天数 | 任务 | 重点 |
-|------|------|------|
-| Day 1-2 | 搭建基础框架 | Spring Boot + MySQL + Redis |
-| Day 3-4 | 用户、商品服务 | CRUD + 缓存 |
-| Day 5-6 | 订单服务 | 分布式锁 + 幂等性 |
-| Day 7-8 | 网关 + 消息队列 | JWT认证 + RabbitMQ |
-| Day 9 | Docker部署 | Docker Compose |
-| Day 10 | 压测 + 文档 | JMeter + Swagger |
 
 ## 📄 相关文档
 
 - 📘 [快速开始指南](QUICKSTART.md) - 5分钟快速启动项目
-- 📗 [面试准备指南](INTERVIEW.md) - 高频面试问题 & 标准答案
 - 📙 [API接口文档](QUICKSTART.md#测试接口) - 完整API测试流程
 
 ## 🤝 常见问题
 
 详见 [QUICKSTART.md](QUICKSTART.md#常见问题)
 
-## 📞 联系方式
 
-如有问题，欢迎交流学习！
-
-## 📄 许可证
-
-MIT License
 
 ---
 
-⭐ **如果这个项目对你有帮助，请给个Star支持一下！**
+ **如果这个项目对你有帮助，请给个⭐支持一下！**
