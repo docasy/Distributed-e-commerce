@@ -68,3 +68,6 @@ Thumbs.db
 
 # SQL dump
 nacos-schema.sql
+
+# Interview notes (local only)
+INTERVIEW.md
