@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <name>Distributed E-commerce Platform</name>
-    <description>分布式电商平台 - 后端实习项目</description>
+    <description>分布式电商平台</description>
 
     <modules>
         <module>ecommerce-common</module>

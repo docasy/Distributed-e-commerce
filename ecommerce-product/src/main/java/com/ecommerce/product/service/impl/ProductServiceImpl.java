@@ -38,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
         
+        // 使用 MySQL LIKE 查询 性能差
         if (keyword != null && !keyword.isEmpty()) {
             wrapper.like(Product::getName, keyword)
                    .or()

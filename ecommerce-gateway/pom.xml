@@ -18,11 +18,21 @@
     <description>网关服务 - 路由、鉴权、限流</description>
 
     <dependencies>
-        <!-- Common Module -->
+        <!-- Common Module (排除Web依赖，Gateway使用Reactive) -->
         <dependency>
             <groupId>com.ecommerce</groupId>
             <artifactId>ecommerce-common</artifactId>
             <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spring Cloud Gateway -->

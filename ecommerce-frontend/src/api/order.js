@@ -1,7 +1,7 @@
-import request from '@/utils/request'
+import request from '@/utils/request' // 订单相关API
 
 // 生成幂等性Token
-export const generateIdempotentToken = () => {
+export const generateIdempotentToken = () => { 
   return request({
     url: '/order/idempotent-token',
     method: 'get'
@@ -9,7 +9,7 @@ export const generateIdempotentToken = () => {
 }
 
 // 创建订单
-export const createOrder = (data) => {
+export const createOrder = (data) => { // data中包含订单信息和幂等性Token
   return request({
     url: '/order/create',
     method: 'post',
@@ -18,7 +18,7 @@ export const createOrder = (data) => {
 }
 
 // 支付订单
-export const payOrder = (orderNo) => {
+export const payOrder = (orderNo) => { 
   return request({
     url: `/order/pay/${orderNo}`,
     method: 'post'

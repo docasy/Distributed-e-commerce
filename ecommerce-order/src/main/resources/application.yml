@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: ecommerce-order
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -62,3 +66,6 @@ feign:
 logging:
   level:
     com.ecommerce.order: debug
+
+seata:
+  enabled: false

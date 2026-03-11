@@ -13,31 +13,34 @@ spring:
   
   cloud:
     nacos:
+    # 服务注册
       discovery:
         server-addr: localhost:8848
+    # 配置管理
       config:
         server-addr: localhost:8848
         file-extension: yaml
-    
+
+    #网关动态发现服务
     gateway:
       discovery:
-        locator:
-          enabled: true
+        locator: 
+          enabled: true # 启用服务发现路由
           lower-case-service-id: true
       
       routes:
         # 用户服务路由
         - id: ecommerce-user
           uri: lb://ecommerce-user
-          predicates:
-            - Path=/api/user/**
+          predicates: #← 路由断言，匹配请求路径
+            - Path=/api/user/**  #← 只转发 /api/user/** 的请求到用户服务
           filters:
-            - StripPrefix=1
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
-                key-resolver: "#{@ipKeyResolver}"
+            - StripPrefix=1 #← 转发前去掉路径前缀（/api），让后端服务看到的路径是 /user/**，更简洁
+            - name: RequestRateLimiter #← 请求限流过滤器，防止恶意请求过多导致服务崩溃
+              args: #← 配置限流参数
+                redis-rate-limiter.replenishRate: 10 #← 每秒允许10个请求
+                redis-rate-limiter.burstCapacity: 20 #← 突发请求允许20个（即短时间内可以有20个请求积压）
+                key-resolver: "#{@ipKeyResolver}" #← 使用IP地址作为限流的key，防止单个IP过多请求
         
         # 商品服务路由
         - id: ecommerce-product

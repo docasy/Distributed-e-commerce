@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO) // ← 主键，自增
     private Long id;
 
     /**
@@ -59,18 +59,18 @@ public class User implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(fill = FieldFill.INSERT) // ← 插入时自动填充时间
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE) // ← 插入和更新时自动填充
     private LocalDateTime updateTime;
 
     /**
      * 逻辑删除：0-未删除 1-已删除
      */
-    @TableLogic
+    @TableLogic // ← 逻辑删除字段，MyBatis-Plus会自动处理删除操作（不真删，只改标志位）
     private Integer deleted;
 }

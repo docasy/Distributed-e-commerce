@@ -1,4 +1,4 @@
-winget install OpenJS.NodeJSpackage com.ecommerce.common.utils;
+package com.ecommerce.common.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,13 +30,13 @@ public class JwtUtil {
         Date expireDate = new Date(now.getTime() + EXPIRE_TIME);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("username", username)
-                .setIssuedAt(now)
-                .setExpiration(expireDate)
-                .signWith(KEY, SignatureAlgorithm.HS256)
-                .compact();
-    }
+            .setSubject(String.valueOf(userId))     // Payload字段1：sub = 用户ID
+            .claim("username", username)             // Payload字段2：自定义claim
+            .setIssuedAt(now)                        // Payload字段3：iat = 签发时间
+            .setExpiration(expireDate)               // Payload字段4：exp = 过期时间
+            .signWith(KEY, SignatureAlgorithm.HS256) // 用密钥和HS256算法签名
+            .compact();                              // 合并三部分，返回token字符串
+}
 
     /**
      * 生成Token（带自定义Claims）
@@ -61,8 +61,8 @@ public class JwtUtil {
         return Jwts.parserBuilder()
                 .setSigningKey(KEY)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseClaimsJws(token)// 检查签名、解析payload
+                .getBody();           // 返回 Claims 对象（包含所有payload数据）
     }
 
     /**
@@ -87,7 +87,7 @@ public class JwtUtil {
     public static boolean isTokenExpired(String token) {
         try {
             Claims claims = parseToken(token);
-            return claims.getExpiration().before(new Date());
+            return claims.getExpiration().before(new Date()); // |exp| < |now| → 过期
         } catch (Exception e) {
             return true;
         }
