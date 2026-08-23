@@ -1,0 +1,166 @@
+version: '3.8'
+
+services:
+  # =====================================================================
+  # 中间件 — 第三方镜像
+  # =====================================================================
+  mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ecommerce
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - ecommerce-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/redis/data:/data
+    command: redis-server --appendonly yes --requirepass redis123
+    networks:
+      - ecommerce-network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: ecommerce-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./docker/rabbitmq/data:/var/lib/rabbitmq
+    networks:
+      - ecommerce-network
+
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: ecommerce-nacos
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_DB_NAME: nacos
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root123
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    depends_on:
+      - mysql
+    networks:
+      - ecommerce-network
+
+  # =====================================================================
+  # 业务服务 — 自己写的 Spring Boot 微服务
+  # =====================================================================
+  ecommerce-user:
+    build:
+      context: .
+      args:
+        SERVICE: ecommerce-user
+    container_name: ecommerce-user
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ecommerce_user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+      SPRING_REDIS_HOST: redis
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
+      SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR: nacos:8848
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - ecommerce-network
+
+  ecommerce-product:
+    build:
+      context: .
+      args:
+        SERVICE: ecommerce-product
+    container_name: ecommerce-product
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ecommerce_product?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+      SPRING_REDIS_HOST: redis
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
+      SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR: nacos:8848
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - ecommerce-network
+
+  ecommerce-order:
+    build:
+      context: .
+      args:
+        SERVICE: ecommerce-order
+    container_name: ecommerce-order
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ecommerce_order?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+      SPRING_REDIS_HOST: redis
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
+      SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR: nacos:8848
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - nacos
+    networks:
+      - ecommerce-network
+
+  ecommerce-gateway:
+    build:
+      context: .
+      args:
+        SERVICE: ecommerce-gateway
+    container_name: ecommerce-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_REDIS_HOST: redis
+      SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR: nacos:8848
+      SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR: nacos:8848
+    depends_on:
+      - redis
+      - nacos
+    networks:
+      - ecommerce-network
+
+  # Cloudflare 隧道 — 把本地后端暴露到公网
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: ecommerce-tunnel
+    command: tunnel --url http://ecommerce-gateway:8080
+    depends_on:
+      - ecommerce-gateway
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
